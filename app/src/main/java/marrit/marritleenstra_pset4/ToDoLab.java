@@ -1,9 +1,16 @@
 package marrit.marritleenstra_pset4;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import marrit.marritleenstra_pset4.database.ToDoDBHelper;
+import marrit.marritleenstra_pset4.database.ToDoDBSchema;
+import marrit.marritleenstra_pset4.database.ToDoDBSchema.ToDoTable;
 
 /**
  * Created by Marrit on 12-10-2017.
@@ -15,6 +22,7 @@ public class ToDoLab {
     private static ToDoLab sToDoLab;
     private Context mContext;
     private SQLiteDatabase mDatabase;
+    private ToDoDBHelper mHelper;
 
     public static ToDoLab get(Context context) {
         if (sToDoLab == null){
@@ -25,7 +33,44 @@ public class ToDoLab {
 
     private ToDoLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = new ToDoDBHelper(mContext);
-                .getWritableDatabase();
+        mHelper = new ToDoDBHelper(mContext);
+        mDatabase = mHelper.getWritableDatabase();
+    }
+
+    // add a row to the database
+    public void addToDo(ToDoItem toDo) {
+        ContentValues values = getContentValues(toDo);
+
+        mDatabase.insert(ToDoTable.NAME, null, values);
+    }
+
+    public List<ToDoItem> getToDoItems() {
+        return new ArrayList<>();
+    }
+
+    public ToDoItem getToDoItem(UUID id) {
+        return null;
+    }
+
+    // update a row in the database
+    public void updateToDoItem(ToDoItem toDo) {
+        String uuidString = ToDoItem.getId().toString();
+        ContentValues values = getContentValues(toDo);
+
+        mDatabase.update(ToDoTable.NAME, values,
+                ToDoTable.Cols.UUID + " = ?",
+                new String[] { uuidString });
+
+    }
+
+    // create a ContentValues for a to-do item
+    private static ContentValues getContentValues(ToDoItem toDo) {
+        ContentValues values = new ContentValues();
+        values.put(ToDoTable.Cols.UUID, ToDoItem.getId().toString());
+        values.put(ToDoTable.Cols.TITLE, ToDoItem.getTitle());
+        //values.put(ToDoTable.Cols.DATE, ToDoItem.getDate().toString());
+        values.put(ToDoTable.Cols.COMPLETED, ToDoItem.getCompleted() ? 1: 0);
+
+        return values;
     }
 }

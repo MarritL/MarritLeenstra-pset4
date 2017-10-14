@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import marrit.marritleenstra_pset4.database.ToDoDBSchema.ToDoTable;
+
 /**
  * Created by Marrit on 12-10-2017.
  * Based on: Phillips, Stewart, Marsicano (2017). Android Programming. The big nerd ranch guide.
@@ -20,6 +22,16 @@ public class ToDoDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("create table " + ToDoTable.NAME + "(" +
+                        " _id integer primary key autoincrement, " +
+                        ToDoTable.Cols.UUID + ", " +
+                        ToDoTable.Cols.TITLE + ", " +
+                        //ToDoTable.Cols.DATE + ", " +
+                        ToDoTable.Cols.COMPLETED + ")"
+        );
+
+
+
 
     }
 

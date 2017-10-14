@@ -9,5 +9,11 @@ public class TodoListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
+
+        // get the To-Do's on the list
+        ToDoLab toDoLab = ToDoLab.get(this);
+
     }
+
+
 }

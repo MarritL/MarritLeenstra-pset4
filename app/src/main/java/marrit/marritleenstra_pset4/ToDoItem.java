@@ -11,10 +11,10 @@ import java.util.UUID;
 public class ToDoItem {
 
     // declare variables of ToDoItem class
-    private UUID mId;
-    private String mTitle;
-    private Calendar mDate;
-    private Boolean mCompleted;
+    private static UUID mId;
+    private static String mTitle;
+    //private static Calendar mDate;
+    private static Boolean mCompleted;
 
     // initiate instance of Class with random Id
     public ToDoItem() {
@@ -22,11 +22,11 @@ public class ToDoItem {
     }
 
     // getters and setters for all fields
-    public UUID getId() {
+    public static UUID getId() {
         return mId;
     }
 
-    public String getTitle() {
+    public static String getTitle() {
         return mTitle;
     }
 
@@ -34,15 +34,15 @@ public class ToDoItem {
         mTitle = title;
     }
 
-    public Calendar getDate() {
+    /*public static Calendar getDate() {
         return mDate;
-    }
+    }*/
 
-    public void setDate(Calendar date) {
+    /*public void setDate(Calendar date) {
         mDate = date;
-    }
+    }*/
 
-    public Boolean getCompleted() {
+    public static Boolean getCompleted() {
         return mCompleted;
     }
 

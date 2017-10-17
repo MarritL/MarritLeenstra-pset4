@@ -44,7 +44,7 @@ public class ToDoLab {
         mDatabase.insert(ToDoTable.NAME, null, values);
     }
 
-    public List<ToDoItem> getToDoItems() {
+    public static List<ToDoItem> getToDoItems() {
         return new ArrayList<>();
     }
 
@@ -54,7 +54,7 @@ public class ToDoLab {
 
     // update a row in the database
     public void updateToDoItem(ToDoItem toDo) {
-        String uuidString = ToDoItem.getId().toString();
+        String uuidString = toDo.getId().toString();
         ContentValues values = getContentValues(toDo);
 
         mDatabase.update(ToDoTable.NAME, values,
@@ -66,10 +66,10 @@ public class ToDoLab {
     // create a ContentValues for a to-do item
     private static ContentValues getContentValues(ToDoItem toDo) {
         ContentValues values = new ContentValues();
-        values.put(ToDoTable.Cols.UUID, ToDoItem.getId().toString());
-        values.put(ToDoTable.Cols.TITLE, ToDoItem.getTitle());
+        values.put(ToDoTable.Cols.UUID, toDo.getId().toString());
+        values.put(ToDoTable.Cols.TITLE, toDo.getTitle());
         //values.put(ToDoTable.Cols.DATE, ToDoItem.getDate().toString());
-        values.put(ToDoTable.Cols.COMPLETED, ToDoItem.getCompleted() ? 1: 0);
+        values.put(ToDoTable.Cols.COMPLETED, toDo.getCompleted() ? 1: 0);
 
         return values;
     }

@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -22,7 +23,6 @@ import java.util.List;
 public class TodoListActivity extends AppCompatActivity {
 
     private RecyclerView mToDoRecyclerView;
-    //private List<ToDoItem> mToDoList;
     private ToDoAdapter mAdapter;
     private Button mButtonAdd;
 
@@ -33,16 +33,9 @@ public class TodoListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
 
-        // get the To-Do's on the list
-        //ToDoLab toDoLab = ToDoLab.get(this);
-        //mToDoList = toDoLab.getToDoItems();
-
         mToDoRecyclerView = (RecyclerView) findViewById(R.id.todo_recycler_view);
         mToDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // initiate the ListAdapter
-        //mAdapter = new ToDoAdapter(mToDoList);
-        //mToDoRecyclerView.setAdapter(mAdapter);
         updateUI();
 
         mButtonAdd = (Button) findViewById(R.id.Button_add);
@@ -53,22 +46,45 @@ public class TodoListActivity extends AppCompatActivity {
     private class ToDoHolder extends RecyclerView.ViewHolder {
         private TextView mTitleTextView;
         private ToDoItem mToDoItem;
+        private CheckBox mCBToDoItem;
 
         public ToDoHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_todo, parent, false));
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.todo_title);
-
+            mCBToDoItem = (CheckBox) itemView.findViewById(R.id.CB_item);
         }
 
         public void bind(ToDoItem toDoItem) {
             mToDoItem = toDoItem;
             mTitleTextView.setText(mToDoItem.getTitle());
-            if (mToDoItem.getCompleted()) {
-                mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);;
+
+            mCBToDoItem.setOnCheckedChangeListener(new MyCheckBoxListener());
+
+        }
+
+        // checkbox listener
+        public class MyCheckBoxListener implements CompoundButton.OnCheckedChangeListener {
+
+            @Override
+            public void onCheckedChanged(CompoundButton checkbox, boolean isChecked) {
+                if (isChecked) {
+                    mToDoItem.setCompleted(true);
+                } else {
+                    mToDoItem.setCompleted(false);
+                }
+
+                if (mToDoItem.getCompleted()) {
+                    mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                } else {
+                    mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+
             }
 
         }
+
+
     }
 
     private class ToDoAdapter extends RecyclerView.Adapter<ToDoHolder> {
@@ -117,12 +133,8 @@ public class TodoListActivity extends AppCompatActivity {
                     toDoItem.setDate(new Date());
                     toDoItem.setCompleted(false);
                     ToDoLab.get(TodoListActivity.this).addToDo(toDoItem);
-                    Log.d("TODOLIST", "toDo added to database");
-                    //mAdapter.notifyItemInserted(mToDoList.size() - 1);
-                    //Log.d("TODOLIST", "notified adapter");
-                    updateUI();
 
-                    Log.d("TODOLIST", "Called UpdateUI()");
+                    updateUI();
 
                     mTitle.getText().clear();
                 }
@@ -131,6 +143,8 @@ public class TodoListActivity extends AppCompatActivity {
 
         }
     }
+
+
 
 
 
@@ -144,14 +158,13 @@ public class TodoListActivity extends AppCompatActivity {
             mAdapter = new ToDoAdapter(toDoItems);
             mToDoRecyclerView.setAdapter(mAdapter);
         } else {
-            //mAdapter.notifyDataSetChanged();
-            //Log.d("TODOLIST", "notified dataset changed");
             mAdapter.setToDoItems(toDoItems);
             mAdapter.notifyItemInserted(toDoItems.size() - 1);
             Log.d("TODOLIST", "notifed item inserted");
-
         }
     }
+
+
 
 
 

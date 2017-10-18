@@ -24,7 +24,6 @@ public class ToDoItem {
 
     public ToDoItem(UUID id) {
         mId = id;
-        //mDate = new Date();
     }
 
     // getters and setters for all fields

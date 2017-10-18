@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ public class TodoListActivity extends AppCompatActivity {
     private RecyclerView mToDoRecyclerView;
     private ToDoAdapter mAdapter;
     private Button mButtonAdd;
+    private List<ToDoItem> toDoItems;
 
 
 
@@ -37,6 +39,7 @@ public class TodoListActivity extends AppCompatActivity {
         mToDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         updateUI();
+        setUpItemTouchHelper();
 
         mButtonAdd = (Button) findViewById(R.id.Button_add);
         mButtonAdd.setOnClickListener(new AddOnClickListener());
@@ -84,10 +87,9 @@ public class TodoListActivity extends AppCompatActivity {
 
         }
 
-
     }
 
-    private class ToDoAdapter extends RecyclerView.Adapter<ToDoHolder> {
+    public class ToDoAdapter extends RecyclerView.Adapter<ToDoHolder> {
         private List<ToDoItem> mToDoItems;
 
         public ToDoAdapter(List<ToDoItem> todoItems) {
@@ -145,25 +147,52 @@ public class TodoListActivity extends AppCompatActivity {
     }
 
 
-
-
-
     // update recyclerview
     private void updateUI() {
         ToDoLab toDoLab = ToDoLab.get(this);
-        List<ToDoItem> toDoItems = toDoLab.getToDoItems();
+        toDoItems = toDoLab.getToDoItems();
 
         if (mAdapter == null) {
-            Log.d("TODOLIST", "mAdapter==null");
             mAdapter = new ToDoAdapter(toDoItems);
             mToDoRecyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.setToDoItems(toDoItems);
             mAdapter.notifyItemInserted(toDoItems.size() - 1);
-            Log.d("TODOLIST", "notifed item inserted");
         }
     }
 
+    // add swipe ability
+    // source: https://stackoverflow.com/questions/34735297/recyclerview-and-itemtouchhelper-swipe-to-remove-issue
+    private void setUpItemTouchHelper() {
+
+        ToDoLab toDoLab = ToDoLab.get(this);
+        toDoItems = toDoLab.getToDoItems();
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerview, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int swipedPosition = viewHolder.getAdapterPosition();
+                System.out.println("swipedposition =" + swipedPosition);
+                ToDoItem toDo = toDoItems.get(swipedPosition);
+                System.out.println("todo = " + toDo);
+                ToDoLab.get(TodoListActivity.this).deleteToDo(toDo);
+                toDoItems.remove(swipedPosition);
+                Log.d("SWIPE", "deleted");
+                mAdapter.notifyItemRemoved(swipedPosition);
+
+
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(mToDoRecyclerView);
+    }
 
 
 

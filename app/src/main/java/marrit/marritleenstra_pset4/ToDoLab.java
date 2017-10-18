@@ -46,6 +46,15 @@ public class ToDoLab {
         mDatabase.insert(ToDoTable.NAME, null, values);
     }
 
+    // delete a row from the database
+    public void deleteToDo(ToDoItem toDo) {
+        String uuidString = toDo.getId().toString();
+
+        mDatabase.delete(ToDoTable.NAME, ToDoTable.Cols.UUID + " = ?",
+                new String[] { uuidString });
+
+    }
+
     public List<ToDoItem> getToDoItems() {
         List<ToDoItem> toDoItems = new ArrayList<>();
 

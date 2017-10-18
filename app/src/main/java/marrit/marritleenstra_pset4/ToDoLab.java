@@ -2,6 +2,7 @@ package marrit.marritleenstra_pset4;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.UUID;
 import marrit.marritleenstra_pset4.database.ToDoDBHelper;
 import marrit.marritleenstra_pset4.database.ToDoDBSchema;
 import marrit.marritleenstra_pset4.database.ToDoDBSchema.ToDoTable;
+import marrit.marritleenstra_pset4.database.ToDoItemCursorWrapper;
 
 /**
  * Created by Marrit on 12-10-2017.
@@ -21,7 +23,7 @@ public class ToDoLab {
 
     private static ToDoLab sToDoLab;
     private Context mContext;
-    private SQLiteDatabase mDatabase;
+    private static SQLiteDatabase mDatabase;
     private ToDoDBHelper mHelper;
 
     public static ToDoLab get(Context context) {
@@ -44,12 +46,42 @@ public class ToDoLab {
         mDatabase.insert(ToDoTable.NAME, null, values);
     }
 
-    public static List<ToDoItem> getToDoItems() {
-        return new ArrayList<>();
+    public List<ToDoItem> getToDoItems() {
+        List<ToDoItem> toDoItems = new ArrayList<>();
+
+        ToDoItemCursorWrapper cursor = queryToDoItems(null, null);
+
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                toDoItems.add(cursor.getToDoItem());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return toDoItems;
     }
 
     public ToDoItem getToDoItem(UUID id) {
-        return null;
+
+        ToDoItemCursorWrapper cursor = queryToDoItems(
+                ToDoTable.Cols.UUID + " = ?",
+                new String[] {id.toString() }
+        );
+
+        try {
+            if (cursor.getCount() == 0) {
+                return null;
+            }
+
+            cursor.moveToFirst();
+            return cursor.getToDoItem();
+        } finally {
+            cursor.close();
+        }
+
     }
 
     // update a row in the database
@@ -68,9 +100,23 @@ public class ToDoLab {
         ContentValues values = new ContentValues();
         values.put(ToDoTable.Cols.UUID, toDo.getId().toString());
         values.put(ToDoTable.Cols.TITLE, toDo.getTitle());
-        //values.put(ToDoTable.Cols.DATE, ToDoItem.getDate().toString());
+        values.put(ToDoTable.Cols.DATE, toDo.getDate().getTime());
         values.put(ToDoTable.Cols.COMPLETED, toDo.getCompleted() ? 1: 0);
 
         return values;
+    }
+
+    // query database
+    private static ToDoItemCursorWrapper queryToDoItems(String whereClause, String[] whereArgs) {
+        Cursor cursor = mDatabase.query(
+                ToDoTable.NAME,
+                null, // select all columns
+                whereClause,
+                whereArgs,
+                null, // group by
+                null, // having
+                null // orderBy
+        );
+        return new ToDoItemCursorWrapper(cursor);
     }
 }

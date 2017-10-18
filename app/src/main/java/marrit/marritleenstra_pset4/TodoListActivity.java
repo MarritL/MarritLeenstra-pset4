@@ -6,18 +6,26 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.style.StrikethroughSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TodoListActivity extends AppCompatActivity {
 
     private RecyclerView mToDoRecyclerView;
-    private List<ToDoItem> mToDoListTest;
+    //private List<ToDoItem> mToDoList;
     private ToDoAdapter mAdapter;
+    private Button mButtonAdd;
+
 
 
     @Override
@@ -25,22 +33,20 @@ public class TodoListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
 
-
-
         // get the To-Do's on the list
-        ToDoLabTest toDoLabTest = ToDoLabTest.get(this);
-        mToDoListTest = ToDoLabTest.getToDos();
-        System.out.println(mToDoListTest);
+        //ToDoLab toDoLab = ToDoLab.get(this);
+        //mToDoList = toDoLab.getToDoItems();
 
         mToDoRecyclerView = (RecyclerView) findViewById(R.id.todo_recycler_view);
         mToDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // initiate the ListAdapter
-        mAdapter = new ToDoAdapter(mToDoListTest);
-        mToDoRecyclerView.setAdapter(mAdapter);
+        //mAdapter = new ToDoAdapter(mToDoList);
+        //mToDoRecyclerView.setAdapter(mAdapter);
+        updateUI();
 
-        // display list
-
+        mButtonAdd = (Button) findViewById(R.id.Button_add);
+        mButtonAdd.setOnClickListener(new AddOnClickListener());
 
     }
 
@@ -90,7 +96,65 @@ public class TodoListActivity extends AppCompatActivity {
         public int getItemCount() {
             return mToDoItems.size();
         }
+
+        public void setToDoItems(List<ToDoItem> toDoItems) {
+            mToDoItems = toDoItems;
+        }
     }
+
+    // listener to add new To-Do
+    public class AddOnClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            if (view == findViewById(R.id.Button_add)) {
+
+                EditText mTitle = (EditText) findViewById(R.id.editText_add_title);
+
+                if (mTitle != null) {
+                    ToDoItem toDoItem = new ToDoItem();
+                    toDoItem.setTitle(mTitle.getText().toString());
+                    toDoItem.setDate(new Date());
+                    toDoItem.setCompleted(false);
+                    ToDoLab.get(TodoListActivity.this).addToDo(toDoItem);
+                    Log.d("TODOLIST", "toDo added to database");
+                    //mAdapter.notifyItemInserted(mToDoList.size() - 1);
+                    //Log.d("TODOLIST", "notified adapter");
+                    updateUI();
+
+                    Log.d("TODOLIST", "Called UpdateUI()");
+
+                    mTitle.getText().clear();
+                }
+
+            }
+
+        }
+    }
+
+
+
+    // update recyclerview
+    private void updateUI() {
+        ToDoLab toDoLab = ToDoLab.get(this);
+        List<ToDoItem> toDoItems = toDoLab.getToDoItems();
+
+        if (mAdapter == null) {
+            Log.d("TODOLIST", "mAdapter==null");
+            mAdapter = new ToDoAdapter(toDoItems);
+            mToDoRecyclerView.setAdapter(mAdapter);
+        } else {
+            //mAdapter.notifyDataSetChanged();
+            //Log.d("TODOLIST", "notified dataset changed");
+            mAdapter.setToDoItems(toDoItems);
+            mAdapter.notifyItemInserted(toDoItems.size() - 1);
+            Log.d("TODOLIST", "notifed item inserted");
+
+        }
+    }
+
+
+
 
 
 

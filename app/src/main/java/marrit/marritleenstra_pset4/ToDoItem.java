@@ -1,6 +1,7 @@
 package marrit.marritleenstra_pset4;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -13,12 +14,17 @@ public class ToDoItem {
     // declare variables of ToDoItem class
     private UUID mId;
     private String mTitle;
-    //private static Calendar mDate;
+    private Date mDate;
     private Boolean mCompleted;
 
-    // initiate instance of Class with random Id
+    // initiate instance of Class with random Id or given Id from database query
     public ToDoItem() {
-        mId = UUID.randomUUID();
+        this(UUID.randomUUID());
+    }
+
+    public ToDoItem(UUID id) {
+        mId = id;
+        //mDate = new Date();
     }
 
     // getters and setters for all fields
@@ -34,13 +40,13 @@ public class ToDoItem {
         mTitle = title;
     }
 
-    /*public static Calendar getDate() {
+    public Date getDate() {
         return mDate;
-    }*/
+    }
 
-    /*public void setDate(Calendar date) {
+    public void setDate(Date date) {
         mDate = date;
-    }*/
+    }
 
     public Boolean getCompleted() {
         return mCompleted;

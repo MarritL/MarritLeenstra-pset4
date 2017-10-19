@@ -34,6 +34,7 @@ public class TodoListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
+        Log.d("TODOLIST", "onCreate called");
 
         mToDoRecyclerView = (RecyclerView) findViewById(R.id.todo_recycler_view);
         mToDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -45,6 +46,7 @@ public class TodoListActivity extends AppCompatActivity {
         mButtonAdd.setOnClickListener(new AddOnClickListener());
 
     }
+    
 
     private class ToDoHolder extends RecyclerView.ViewHolder {
         private TextView mTitleTextView;
@@ -184,6 +186,7 @@ public class TodoListActivity extends AppCompatActivity {
                 ToDoLab.get(TodoListActivity.this).deleteToDo(toDo);
                 toDoItems.remove(swipedPosition);
                 Log.d("SWIPE", "deleted");
+                mAdapter.setToDoItems(toDoItems);
                 mAdapter.notifyItemRemoved(swipedPosition);
 
 

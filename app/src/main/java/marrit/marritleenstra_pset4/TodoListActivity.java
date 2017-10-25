@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,7 +35,6 @@ public class TodoListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
-        Log.d("TODOLIST", "onCreate called");
 
         mToDoRecyclerView = (RecyclerView) findViewById(R.id.todo_recycler_view);
         mToDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -46,7 +46,7 @@ public class TodoListActivity extends AppCompatActivity {
         mButtonAdd.setOnClickListener(new AddOnClickListener());
 
     }
-    
+
 
     private class ToDoHolder extends RecyclerView.ViewHolder {
         private TextView mTitleTextView;
@@ -64,6 +64,13 @@ public class TodoListActivity extends AppCompatActivity {
             mToDoItem = toDoItem;
             mTitleTextView.setText(mToDoItem.getTitle());
 
+            if (mToDoItem.getCompleted()) {
+                mCBToDoItem.setChecked(true);
+                mTitleTextView.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                mCBToDoItem.setChecked(false);
+            }
+
             mCBToDoItem.setOnCheckedChangeListener(new MyCheckBoxListener());
 
         }
@@ -75,14 +82,11 @@ public class TodoListActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton checkbox, boolean isChecked) {
                 if (isChecked) {
                     mToDoItem.setCompleted(true);
+                    ToDoLab.get(TodoListActivity.this).updateToDoItem(mToDoItem);
+                    mTitleTextView.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
                 } else {
                     mToDoItem.setCompleted(false);
-                }
-
-                if (mToDoItem.getCompleted()) {
-                    mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                } else {
-                    mTitleTextView.setPaintFlags(mTitleTextView.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
+                    mTitleTextView.setPaintFlags(0);
                 }
 
             }
@@ -131,25 +135,30 @@ public class TodoListActivity extends AppCompatActivity {
 
                 EditText mTitle = (EditText) findViewById(R.id.editText_add_title);
 
-                if (mTitle != null) {
+                // check if user gave To-Do title
+                if (!mTitle.getText().toString().equals("")) {
+
+                    // make To-Do item
                     ToDoItem toDoItem = new ToDoItem();
                     toDoItem.setTitle(mTitle.getText().toString());
-                    toDoItem.setDate(new Date());
-                    toDoItem.setCompleted(false);
                     ToDoLab.get(TodoListActivity.this).addToDo(toDoItem);
 
+                    // display To-Do item
                     updateUI();
 
+                    // empty edit-text
                     mTitle.getText().clear();
+
+                } else {
+                    // if user gave no title, yell at him
+                    Toast.makeText(TodoListActivity.this, "Give the TODO a title!", Toast.LENGTH_SHORT).show();
                 }
-
             }
-
         }
     }
 
 
-    // update recyclerview
+    // update recyclerView
     private void updateUI() {
         ToDoLab toDoLab = ToDoLab.get(this);
         toDoItems = toDoLab.getToDoItems();

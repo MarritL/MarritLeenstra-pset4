@@ -20,6 +20,10 @@ public class ToDoItem {
     // initiate instance of Class with random Id or given Id from database query
     public ToDoItem() {
         this(UUID.randomUUID());
+        //mId = UUID.randomUUID();
+        mCompleted = false;
+
+
     }
 
     public ToDoItem(UUID id) {

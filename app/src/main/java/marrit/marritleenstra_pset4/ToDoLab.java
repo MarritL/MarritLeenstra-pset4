@@ -94,6 +94,7 @@ public class ToDoLab {
     }
 
     // update a row in the database
+    //TODO updaten na checkbox
     public void updateToDoItem(ToDoItem toDo) {
         String uuidString = toDo.getId().toString();
         ContentValues values = getContentValues(toDo);

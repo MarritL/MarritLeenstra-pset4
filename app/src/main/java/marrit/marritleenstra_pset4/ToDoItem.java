@@ -10,24 +10,27 @@ import java.util.UUID;
 public class ToDoItem {
 
     // declare variables of ToDoItem class
-    private UUID mId;
+    //private UUID mId;
+    private int mId;
     private String mTitle;
     private Boolean mCompleted;
 
     // initiate instance of Class with random Id or given Id from database query
     public ToDoItem() {
-        this(UUID.randomUUID());
+        //this(UUID.randomUUID());
         mCompleted = false;
 
 
     }
 
-    public ToDoItem(UUID id) {
+    //public ToDoItem(UUID id) {
+    public ToDoItem(int id) {
         mId = id;
     }
 
     // getters and setters for all fields
-    public UUID getId() {
+    //public UUID getId() {
+    public int getId() {
         return mId;
     }
 

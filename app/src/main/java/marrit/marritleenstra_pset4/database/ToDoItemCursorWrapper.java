@@ -18,11 +18,13 @@ public class ToDoItemCursorWrapper extends CursorWrapper {
     }
 
     public ToDoItem getToDoItem() {
-        String uuidString = getString(getColumnIndex(ToDoTable.Cols.UUID));
+        //String uuidString = getString(getColumnIndex(ToDoTable.Cols.UUID));
+        String idString = getString(getColumnIndex(ToDoTable.Cols._id));
         String title = getString(getColumnIndex(ToDoTable.Cols.TITLE));
         int isCompleted = getInt(getColumnIndex(ToDoTable.Cols.COMPLETED));
 
-        ToDoItem toDoItem = new ToDoItem(UUID.fromString(uuidString));
+        //ToDoItem toDoItem = new ToDoItem(UUID.fromString(uuidString));
+        ToDoItem toDoItem = new ToDoItem(Integer.valueOf(idString));
         toDoItem.setTitle(title);
         toDoItem.setCompleted(isCompleted != 0);
 

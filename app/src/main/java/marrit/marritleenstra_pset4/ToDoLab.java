@@ -47,10 +47,13 @@ public class ToDoLab {
 
     // delete a row from the database
     public void deleteToDo(ToDoItem toDo) {
-        String uuidString = toDo.getId().toString();
+        //String uuidString = toDo.getId().toString();
+        String idString = String.valueOf(toDo.getId());
 
-        mDatabase.delete(ToDoTable.NAME, ToDoTable.Cols.UUID + " = ?",
-                new String[] { uuidString });
+        //mDatabase.delete(ToDoTable.NAME, ToDoTable.Cols.UUID + " = ?",
+        mDatabase.delete(ToDoTable.NAME, ToDoTable.Cols._id + " = ?",
+                //new String[] { uuidString });
+                new String[] { idString });
 
     }
 
@@ -72,11 +75,14 @@ public class ToDoLab {
         return toDoItems;
     }
 
-    public ToDoItem getToDoItem(UUID id) {
+    //public ToDoItem getToDoItem(UUID id) {
+    public ToDoItem getToDoItem(int id) {
 
         ToDoItemCursorWrapper cursor = queryToDoItems(
-                ToDoTable.Cols.UUID + " = ?",
-                new String[] {id.toString() }
+                //ToDoTable.Cols.UUID + " = ?",
+                ToDoTable.Cols._id + " = ?",
+                //new String[] {id.toString() }
+                new String[] {String.valueOf(id) }
         );
 
         try {
@@ -94,19 +100,22 @@ public class ToDoLab {
 
     // update a row in the database
     public void updateToDoItem(ToDoItem toDo) {
-        String uuidString = toDo.getId().toString();
+        //String uuidString = toDo.getId().toString();
+        String idString = String.valueOf(toDo.getId());
         ContentValues values = getContentValues(toDo);
 
         mDatabase.update(ToDoTable.NAME, values,
-                ToDoTable.Cols.UUID + " = ?",
-                new String[] { uuidString });
+                //ToDoTable.Cols.UUID + " = ?",
+                ToDoTable.Cols._id + " = ?",
+                //new String[] { uuidString });
+                new String[] { idString });
 
     }
 
     // create a ContentValues for a to-do item
     private static ContentValues getContentValues(ToDoItem toDo) {
         ContentValues values = new ContentValues();
-        values.put(ToDoTable.Cols.UUID, toDo.getId().toString());
+        //values.put(ToDoTable.Cols.UUID, toDo.getId().toString());
         values.put(ToDoTable.Cols.TITLE, toDo.getTitle());
         values.put(ToDoTable.Cols.COMPLETED, toDo.getCompleted() ? 1: 0);
 

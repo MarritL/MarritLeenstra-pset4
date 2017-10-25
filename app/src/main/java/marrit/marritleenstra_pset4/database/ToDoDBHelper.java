@@ -26,7 +26,6 @@ public class ToDoDBHelper extends SQLiteOpenHelper {
                         " _id integer primary key autoincrement, " +
                         ToDoTable.Cols.UUID + ", " +
                         ToDoTable.Cols.TITLE + ", " +
-                        ToDoTable.Cols.DATE + ", " +
                         ToDoTable.Cols.COMPLETED + ")"
         );
 

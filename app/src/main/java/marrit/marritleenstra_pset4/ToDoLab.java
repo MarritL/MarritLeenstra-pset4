@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 import marrit.marritleenstra_pset4.database.ToDoDBHelper;
-import marrit.marritleenstra_pset4.database.ToDoDBSchema;
 import marrit.marritleenstra_pset4.database.ToDoDBSchema.ToDoTable;
 import marrit.marritleenstra_pset4.database.ToDoItemCursorWrapper;
 
@@ -94,7 +93,6 @@ public class ToDoLab {
     }
 
     // update a row in the database
-    //TODO updaten na checkbox
     public void updateToDoItem(ToDoItem toDo) {
         String uuidString = toDo.getId().toString();
         ContentValues values = getContentValues(toDo);
@@ -110,7 +108,6 @@ public class ToDoLab {
         ContentValues values = new ContentValues();
         values.put(ToDoTable.Cols.UUID, toDo.getId().toString());
         values.put(ToDoTable.Cols.TITLE, toDo.getTitle());
-        values.put(ToDoTable.Cols.DATE, toDo.getDate().getTime());
         values.put(ToDoTable.Cols.COMPLETED, toDo.getCompleted() ? 1: 0);
 
         return values;

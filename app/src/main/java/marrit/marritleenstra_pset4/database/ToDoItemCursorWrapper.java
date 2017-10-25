@@ -2,10 +2,7 @@ package marrit.marritleenstra_pset4.database;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
-import android.support.annotation.IntDef;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 import marrit.marritleenstra_pset4.ToDoItem;
@@ -23,12 +20,10 @@ public class ToDoItemCursorWrapper extends CursorWrapper {
     public ToDoItem getToDoItem() {
         String uuidString = getString(getColumnIndex(ToDoTable.Cols.UUID));
         String title = getString(getColumnIndex(ToDoTable.Cols.TITLE));
-        Long date = getLong(getColumnIndex(ToDoTable.Cols.DATE));
         int isCompleted = getInt(getColumnIndex(ToDoTable.Cols.COMPLETED));
 
         ToDoItem toDoItem = new ToDoItem(UUID.fromString(uuidString));
         toDoItem.setTitle(title);
-        toDoItem.setDate(new Date(date));
         toDoItem.setCompleted(isCompleted != 0);
 
 

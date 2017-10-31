@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.style.StrikethroughSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +16,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 import java.util.List;
 
 public class TodoListActivity extends AppCompatActivity {
 
+    // add variables
     private RecyclerView mToDoRecyclerView;
     private ToDoAdapter mAdapter;
-    private Button mButtonAdd;
     private List<ToDoItem> toDoItems;
-
 
 
     @Override
@@ -36,34 +31,42 @@ public class TodoListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
 
+        // set up recyclerView
         mToDoRecyclerView = (RecyclerView) findViewById(R.id.todo_recycler_view);
         mToDoRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // display recyclerView
         updateUI();
-        setUpItemTouchHelper();
 
-        mButtonAdd = (Button) findViewById(R.id.Button_add);
+        // make swipe possible
+        ItemTouchHelper();
+
+        // initiate button to add a new To-Do
+        Button mButtonAdd = (Button) findViewById(R.id.Button_add);
         mButtonAdd.setOnClickListener(new AddOnClickListener());
-
     }
 
 
+    // ViewHolder for the recyclerView
     private class ToDoHolder extends RecyclerView.ViewHolder {
         private TextView mTitleTextView;
         private ToDoItem mToDoItem;
         private CheckBox mCBToDoItem;
 
-        public ToDoHolder(LayoutInflater inflater, ViewGroup parent) {
+        // construct a viewHolder with the checkbox and textview
+        ToDoHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_todo, parent, false));
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.todo_title);
             mCBToDoItem = (CheckBox) itemView.findViewById(R.id.CB_item);
         }
 
-        public void bind(ToDoItem toDoItem) {
+        // bind the data to the viewHolder
+        void bind(ToDoItem toDoItem) {
             mToDoItem = toDoItem;
             mTitleTextView.setText(mToDoItem.getTitle());
 
+            // check and strike through only if the To-Do is completed
             if (mToDoItem.getCompleted()) {
                 mCBToDoItem.setChecked(true);
                 mTitleTextView.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
@@ -71,12 +74,13 @@ public class TodoListActivity extends AppCompatActivity {
                 mCBToDoItem.setChecked(false);
             }
 
+            // listen for a change in completed
             mCBToDoItem.setOnCheckedChangeListener(new MyCheckBoxListener());
 
         }
 
-        // checkbox listener
-        public class MyCheckBoxListener implements CompoundButton.OnCheckedChangeListener {
+        // checkbox listener for the To-Dos
+        class MyCheckBoxListener implements CompoundButton.OnCheckedChangeListener {
 
             @Override
             public void onCheckedChanged(CompoundButton checkbox, boolean isChecked) {
@@ -88,20 +92,19 @@ public class TodoListActivity extends AppCompatActivity {
                     mToDoItem.setCompleted(false);
                     mTitleTextView.setPaintFlags(0);
                 }
-
             }
-
         }
-
     }
 
-    public class ToDoAdapter extends RecyclerView.Adapter<ToDoHolder> {
+    // Adapter for the recyclerView
+    class ToDoAdapter extends RecyclerView.Adapter<ToDoHolder> {
         private List<ToDoItem> mToDoItems;
 
-        public ToDoAdapter(List<ToDoItem> todoItems) {
+        ToDoAdapter(List<ToDoItem> todoItems) {
             mToDoItems = todoItems;
         }
 
+        // called when new viewHolder is needed
         @Override
         public ToDoHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
@@ -109,25 +112,27 @@ public class TodoListActivity extends AppCompatActivity {
             return new ToDoHolder(layoutInflater, parent);
         }
 
+        // call bind when a viewHolder needs to display a ToDoItem
         @Override
         public void onBindViewHolder(ToDoHolder holder, int position) {
             ToDoItem toDoItem = mToDoItems.get(position);
             holder.bind(toDoItem);
-
         }
+
 
         @Override
         public int getItemCount() {
             return mToDoItems.size();
         }
 
-        public void setToDoItems(List<ToDoItem> toDoItems) {
+        // method to let the adapter know which list to use
+        void setToDoItems(List<ToDoItem> toDoItems) {
             mToDoItems = toDoItems;
         }
     }
 
     // listener to add new To-Do
-    public class AddOnClickListener implements View.OnClickListener {
+    private class AddOnClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
@@ -174,42 +179,34 @@ public class TodoListActivity extends AppCompatActivity {
 
     // add swipe ability
     // source: https://stackoverflow.com/questions/34735297/recyclerview-and-itemtouchhelper-swipe-to-remove-issue
-    private void setUpItemTouchHelper() {
+    private void ItemTouchHelper() {
 
         ToDoLab toDoLab = ToDoLab.get(this);
         toDoItems = toDoLab.getToDoItems();
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
+            // disable onMove
             @Override
             public boolean onMove(RecyclerView recyclerview, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
 
+            // enable swipe and delete swiped item from list and database
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int swipedPosition = viewHolder.getAdapterPosition();
-                System.out.println("swipedposition =" + swipedPosition);
                 ToDoItem toDo = toDoItems.get(swipedPosition);
-                System.out.println("todo = " + toDo);
                 ToDoLab.get(TodoListActivity.this).deleteToDo(toDo);
                 toDoItems.remove(swipedPosition);
-                Log.d("SWIPE", "deleted");
                 mAdapter.setToDoItems(toDoItems);
                 mAdapter.notifyItemRemoved(swipedPosition);
-
-
             }
         };
 
+        // attach this ability to the recyclerView
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         itemTouchHelper.attachToRecyclerView(mToDoRecyclerView);
     }
-
-
-
-
-
-
 
 }

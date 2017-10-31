@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import marrit.marritleenstra_pset4.database.ToDoDBHelper;
 import marrit.marritleenstra_pset4.database.ToDoDBSchema.ToDoTable;
@@ -18,46 +17,45 @@ import marrit.marritleenstra_pset4.database.ToDoItemCursorWrapper;
  * The To-Do lab contains all the methods to manipulate the data stash for ToDoItem objects.
  */
 
-public class ToDoLab {
+class ToDoLab {
 
+    // declare variables
     private static ToDoLab sToDoLab;
-    private Context mContext;
     private static SQLiteDatabase mDatabase;
-    private ToDoDBHelper mHelper;
 
-    public static ToDoLab get(Context context) {
+    // get the ToDoLab object (only one possible)
+    static ToDoLab get(Context context) {
         if (sToDoLab == null){
             sToDoLab = new ToDoLab(context);
         }
         return sToDoLab;
     }
 
+    // open (and if needed create) a database
     private ToDoLab(Context context) {
-        mContext = context.getApplicationContext();
-        mHelper = new ToDoDBHelper(mContext);
-        mDatabase = mHelper.getWritableDatabase();
+        Context context1 = context.getApplicationContext();
+        ToDoDBHelper helper = new ToDoDBHelper(context1);
+        mDatabase = helper.getWritableDatabase();
     }
 
     // add a row to the database
-    public void addToDo(ToDoItem toDo) {
+    void addToDo(ToDoItem toDo) {
         ContentValues values = getContentValues(toDo);
 
         mDatabase.insert(ToDoTable.NAME, null, values);
     }
 
     // delete a row from the database
-    public void deleteToDo(ToDoItem toDo) {
-        //String uuidString = toDo.getId().toString();
+    void deleteToDo(ToDoItem toDo) {
         String idString = String.valueOf(toDo.getId());
 
-        //mDatabase.delete(ToDoTable.NAME, ToDoTable.Cols.UUID + " = ?",
         mDatabase.delete(ToDoTable.NAME, ToDoTable.Cols._id + " = ?",
-                //new String[] { uuidString });
                 new String[] { idString });
 
     }
 
-    public List<ToDoItem> getToDoItems() {
+    // read the ToDoItems from the database and put in list
+    List<ToDoItem> getToDoItems() {
         List<ToDoItem> toDoItems = new ArrayList<>();
 
         ToDoItemCursorWrapper cursor = queryToDoItems(null, null);
@@ -75,13 +73,11 @@ public class ToDoLab {
         return toDoItems;
     }
 
-    //public ToDoItem getToDoItem(UUID id) {
+    // get one to do item
     public ToDoItem getToDoItem(int id) {
 
         ToDoItemCursorWrapper cursor = queryToDoItems(
-                //ToDoTable.Cols.UUID + " = ?",
                 ToDoTable.Cols._id + " = ?",
-                //new String[] {id.toString() }
                 new String[] {String.valueOf(id) }
         );
 
@@ -95,19 +91,15 @@ public class ToDoLab {
         } finally {
             cursor.close();
         }
-
     }
 
     // update a row in the database
-    public void updateToDoItem(ToDoItem toDo) {
-        //String uuidString = toDo.getId().toString();
+    void updateToDoItem(ToDoItem toDo) {
         String idString = String.valueOf(toDo.getId());
         ContentValues values = getContentValues(toDo);
 
         mDatabase.update(ToDoTable.NAME, values,
-                //ToDoTable.Cols.UUID + " = ?",
                 ToDoTable.Cols._id + " = ?",
-                //new String[] { uuidString });
                 new String[] { idString });
 
     }
@@ -115,7 +107,6 @@ public class ToDoLab {
     // create a ContentValues for a to-do item
     private static ContentValues getContentValues(ToDoItem toDo) {
         ContentValues values = new ContentValues();
-        //values.put(ToDoTable.Cols.UUID, toDo.getId().toString());
         values.put(ToDoTable.Cols.TITLE, toDo.getTitle());
         values.put(ToDoTable.Cols.COMPLETED, toDo.getCompleted() ? 1: 0);
 
